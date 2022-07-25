@@ -9,7 +9,7 @@ function Decoder(bytes, port) {
     var decoded = {
         hard_ver: 0,
         soft_ver: 0,
-        // id: "123456123456",
+        id: "",
         battery: 0.0,
         temperature: 0.0,
         humidity: 0.0,
@@ -42,7 +42,7 @@ function Decoder(bytes, port) {
                 i += 2;
                 break;
             case 0x02:  //ID
-                // decoded.id = bytes[i];
+                decoded.id = hexToString(bytes.slice(i, i + 6));
                 dataLen -= 6;
                 i += 6;
                 break;
@@ -140,6 +140,15 @@ function byteToInt16(bytes) {
 function byteToInt32(bytes) {
     var value = bytes[0] * 0xFF * 0xFF + bytes[1] * 0xFF + bytes[2];
     return value > 0x7fffff ? value - 0x1000000 : value;
+}
+
+function hexToString(bytes) {
+    var value = "";
+    var arr = bytes.toString(16).split(",");
+    for (var i = 0; i < arr.length; i++) {
+        value += parseInt(arr[i]).toString(16);
+    }
+    return value;
 }
 
 function checkReportSync(bytes) {
