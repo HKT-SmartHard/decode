@@ -3,16 +3,11 @@
  * 
  * Copyright 2022 HKT SmartHard
  * 
- * @product undefine
+ * @product HKT-IRC01
  */
 function Decoder(bytes, port) {
-    var decoded = {
-        hard_ver: 0,
-        soft_ver: 0,
-        id: "",
-        counterA: 0,
-        counterB: 0,
-    };
+
+    var decoded = {};
 
     if (checkReportSync(bytes) == false)
         return;

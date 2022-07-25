@@ -3,28 +3,11 @@
  * 
  * Copyright 2022 HKT SmartHard
  * 
- * @product undefine
+ * @product AQS1000
  */
 function Decoder(bytes, port) {
-    var decoded = {
-        hard_ver: 0,
-        soft_ver: 0,
-        id: "",
-        battery: 0.0,
-        temperature: 0.0,
-        humidity: 0.0,
-        pir: 0,
-        light_level: 0,
-        co2: 0,
-        tvoc: 0,
-        pressure: 0,
-        hcho: 0,
-        pm2_5: 0,
-        pm10: 0,
-        o3_level: 0,
-        pwr_way: 0,
-        eco: 0,
-    };
+
+    var decoded = {};
 
     if (checkReportSync(bytes) == false)
         return;

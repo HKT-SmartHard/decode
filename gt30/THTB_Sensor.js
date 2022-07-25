@@ -3,10 +3,11 @@
  * 
  * Copyright 2022 HKT SmartHard
  * 
- * @product undefine
+ * @product GT-30
  */
 function Decoder(bytes, port) {
 
+    var decoded = {};
     if (checkReportSync(bytes.slice(0, 4)) == false)
         return;
 
@@ -14,17 +15,6 @@ function Decoder(bytes, port) {
 
     if (field.length == 10) //gps data
     {
-        var decoded = {
-            deveui: "",
-            soft_ver: 0,
-            que_num: 0,
-            event: 0,
-            temperature: 0,
-            lon: 0,         // E,W(-)
-            lat: 0,          // N,S(-)
-            time: "",
-        };
-
         // Longitude of GPS
         decoded.lon = parseFloat(field[6].slice(1, field[6].length));
         if (field[6].slice(0, 1) == "W")  //E,W
@@ -43,18 +33,6 @@ function Decoder(bytes, port) {
     }
     else if (field.length == 11)    //normal data
     {
-        var decoded = {
-            deveui: "",
-            soft_ver: 0,
-            que_num: 0,
-            event: 0,
-            state: 0,
-            temperature: 0,
-            humidity: 0,
-            moved: 0,
-            battery: 0,
-        };
-
         //This is the state of any alarm sent. When an alarm threshold hasreached, the unit must send State 1. 
         //If the alarm continues when thenext send interval reaches, then the unit must send State 2. 
         // When the end of the alarm occurs then a state of 3 must be sent.
