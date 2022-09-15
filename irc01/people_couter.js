@@ -24,15 +24,25 @@ function Decoder(bytes, port) {
                 dataLen -= 2;
                 i += 2;
                 break;
-            case 0x02:  //ID
-                decoded.id = hexToString(bytes.slice(i, i + 6));
-                dataLen -= 6;
-                i += 6;
-                break;
-            case 0x03:// BATTERY
+            case 0x03:// battery
                 decoded.battery = bytes[i];
                 dataLen -= 1;
                 i += 1;
+                break;
+            case 0x04:// IR report mode
+                decoded.IRreportMode = bytes[i];
+                dataLen -= 1;
+                i += 1;
+                break;
+            case 0x05:// IR report intervel
+                decoded.IRreportIntervel = byteToUint16(bytes.slice(i, i + 2));
+                dataLen -= 2;
+                i += 2;
+                break;
+            case 0x06:// Threshold of total number of users
+                decoded.totalNumber = byteToUint16(bytes.slice(i, i + 2));
+                dataLen -= 2;
+                i += 2;
                 break;
             case 0x07:// people counter report
                 decoded.counterA = byteToUint16(bytes.slice(i, i + 2));
@@ -41,6 +51,16 @@ function Decoder(bytes, port) {
                 decoded.totalCounterB = byteToUint32(bytes.slice(i + 8, i + 12));
                 dataLen -= 12;
                 i += 12;
+                break;
+            case 0x83:// fault status
+                decoded.faultStatus = bytes[i];
+                dataLen -= 1;
+                i += 1;
+                break;
+            case 0x86:// report interval
+                decoded.reportInterval = byteToUint16(bytes.slice(i, i + 2));
+                dataLen -= 2;
+                i += 2;
                 break;
         }
     }
@@ -76,7 +96,8 @@ function checkReportSync(bytes) {
     return false;
 }
 
-var info_report = [0x68, 0x6B, 0x74, 0x00, 0x01, 0x01, 0x01, 0x02];
+
+var info_report = [0x68, 0x6B, 0x74, 0x00, 0x00, 0x01, 0x01, 0x02, 0x03, 0x64, 0x86, 0x01, 0xE1, 0x04, 0x01, 0x05, 0x00, 0x1E, 0x06, 0x00, 0x64, 0x83, 0x00];
 var data_report = [0x68, 0x6B, 0x74, 0x00, 0x59, 0x07, 0x00, 0x33, 0x00, 0x22, 0x00, 0x00, 0x12, 0x22, 0x00, 0x00, 0x22, 0x22];
 
 console.log(Decoder(info_report, 10))
