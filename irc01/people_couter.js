@@ -37,9 +37,10 @@ function Decoder(bytes, port) {
             case 0x07:// people counter report
                 decoded.counterA = byteToUint16(bytes.slice(i, i + 2));
                 decoded.counterB = byteToUint16(bytes.slice(i + 2, i + 4));
-
-                dataLen -= 4;
-                i += 4;
+                decoded.totalCounterA = byteToUint32(bytes.slice(i + 4, i + 8));
+                decoded.totalCounterB = byteToUint32(bytes.slice(i + 8, i + 12));
+                dataLen -= 12;
+                i += 12;
                 break;
         }
     }
@@ -48,19 +49,15 @@ function Decoder(bytes, port) {
 
 
 function byteToUint16(bytes) {
-    var value = bytes[0] * 0xFF + bytes[1];
+    var value = (bytes[0] << 8) | bytes[1];
     return value;
 }
 
-function byteToInt16(bytes) {
-    var value = bytes[0] * 0xFF + bytes[1];
-    return value > 0x7fff ? value - 0x10000 : value;
+function byteToUint32(bytes) {
+    var value = (bytes[0] << 24) | (bytes[1] << 16) | (bytes[2] << 8) | (bytes[3] << 0);
+    return value;
 }
 
-function byteToInt32(bytes) {
-    var value = bytes[0] * 0xFF * 0xFF + bytes[1] * 0xFF + bytes[2];
-    return value > 0x7fffff ? value - 0x1000000 : value;
-}
 
 function hexToString(bytes) {
 
@@ -79,8 +76,8 @@ function checkReportSync(bytes) {
     return false;
 }
 
-var info_report = [0x68, 0x6B, 0x74, 0x00, 0x01, 0x01, 0x01, 0x05, 0x02, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66];
-var data_report = [0x68, 0x6B, 0x74, 0x00, 0x59, 0x07, 0x00, 0x33, 0x00, 0x22];
+var info_report = [0x68, 0x6B, 0x74, 0x00, 0x01, 0x01, 0x01, 0x02];
+var data_report = [0x68, 0x6B, 0x74, 0x00, 0x59, 0x07, 0x00, 0x33, 0x00, 0x22, 0x00, 0x00, 0x12, 0x22, 0x00, 0x00, 0x22, 0x22];
 
 console.log(Decoder(info_report, 10))
 console.log(Decoder(data_report, 10))
