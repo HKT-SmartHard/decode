@@ -3,7 +3,7 @@
  * 
  * Copyright 2022 HKT SmartHard
  * 
- * @product HKT-DMS01
+ * @product HKT-DS-100
  */
 
 function Decoder(bytes, port) {

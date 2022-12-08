@@ -3,7 +3,7 @@
  * 
  * Copyright 2022 HKT SmartHard
  * 
- * @product GT-30
+ * @product HKT-GT30
  */
 function Decoder(bytes, port) {
 

@@ -3,7 +3,7 @@
  * 
  * Copyright 2022 HKT SmartHard
  * 
- * @product AQS1000
+ * @product HKT-AQS-1000
  */
 function Decoder(bytes, port) {
 
