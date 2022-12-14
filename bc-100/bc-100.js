@@ -1,9 +1,9 @@
 /**
  * Payload Decoder for The Reports
  * 
- * Copyright 2022 HKT  Bovine stomach capsule
+ * Copyright 2022 HKT  SmartHard
  * 
- * @product BC-100
+ * @product   Bovine stomach capsule  BC-100
  */
  function decodeUplink(Bytes) 
  {
