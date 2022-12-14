@@ -1,9 +1,9 @@
 /**
  * Decoder for The Things Network
  * 
- * Copyright 2022 MagneticSensor
+ * Copyright 2022 HKT SmartHard
  * 
- * @product DC-10
+ * @product    MagneticSensor   DC-10
  */
 function Decoder(bytes) {
     var decoded = {};
