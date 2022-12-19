@@ -178,7 +178,6 @@ function formatDate(time, format = 'YY-MM-DD hh:mm:ss') {
         .replace(/hh/g, preArr[hour] || hour)
         .replace(/mm/g, preArr[min] || min)
         .replace(/ss/g, preArr[sec] || sec);
-
     return newTime;
 }
 
