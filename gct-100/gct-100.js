@@ -12,6 +12,7 @@
             decoded.ID=readUInt8LE(bytes.slice(1,2));
             decoded.DataLength=readUInt8LE(bytes.slice(2,3));
             decoded.Timestamp=readUInt32LE(bytes.slice(3, 7));
+            formatDate(decoded.Timestamp);
             decoded.lat=readUInt32LE(bytes.slice(7, 11))/1000000;
             decoded.lon=readUInt32LE(bytes.slice(11, 15))/1000000;
             decoded.Speed=readUInt8LE(bytes.slice(15, 16));
@@ -25,6 +26,7 @@
             decoded.ID=readUInt8LE(bytes.slice(1,2));
             decoded.DataLength=readUInt8LE(bytes.slice(2,3));
             decoded.Timestamp=readUInt32LE(bytes.slice(3, 7));
+            formatDate(decoded.Timestamp);
             decoded.TotalQuantity=readUInt8LE(bytes.slice(7, 8));
             if(0<decoded.TotalQuantity&&decoded.TotalQuantity<6){
                 decoded.Beacons=[];
@@ -42,12 +44,14 @@
             decoded.ID=readUInt8LE(bytes.slice(1,2));
             decoded.DataLength=readUInt8LE(bytes.slice(2,3));
             decoded.Timestamp=readUInt32LE(bytes.slice(3, 7));
+            formatDate(decoded.Timestamp);
             decoded.StepCount=readUInt16LE(bytes.slice(7, 9));
             decoded.Electricity=readUInt8LE(bytes.slice(9, 10));
             decoded.AlarmState=readUInt8LE(bytes.slice(10, 11));
         }
         else if(bytes[18]===0xb0||bytes[18]===0xb2||bytes[18]===0xb3||bytes[18]===0xb5||bytes[18]===0xba){
             decoded.Timestamp=readUInt32LE(bytes.slice(1, 5));
+            formatDate(decoded.Timestamp);
             decoded.lat=readUInt32LE(bytes.slice(5, 9))/1000000;
             decoded.lon=readUInt32LE(bytes.slice(9, 13))/1000000;
             decoded.Speed=readUInt8LE(bytes.slice(13, 14));
@@ -178,7 +182,7 @@ function formatDate(time, format = 'YY-MM-DD hh:mm:ss') {
         .replace(/hh/g, preArr[hour] || hour)
         .replace(/mm/g, preArr[min] || min)
         .replace(/ss/g, preArr[sec] || sec);
-
+        console.log(newTime);
     return newTime;
 }
 
