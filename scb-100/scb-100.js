@@ -10,7 +10,7 @@
      var decoded = {};
      if(Bytes[0]===0xAA)
        {
-           if(Bytes[1]===0x07||Bytes[1]===0x08)//主动或者被动上报数据
+           if(Bytes[1]===0x07||Bytes[1]===0x06)
            {
             if(Bytes.length===68)
               decoded.CMD=readUInt8LE(Bytes.slice(1,2));
@@ -48,7 +48,7 @@
               decoded.temperature_N=readUInt16LE(Bytes.slice(62,64));
               decoded.Remotecontrol=readUInt8LE(Bytes.slice(64,65));
            }
-           else if(Bytes[1]===0x05&&Bytes.length===49)//断路器的门限值参数
+           else if(Bytes[1]===0x05&&Bytes.length===49)
            {
             decoded.CMD=readUInt8LE(Bytes.slice(1,2));
             decoded.addr=readUInt8LE(Bytes.slice(2,3));
@@ -77,7 +77,7 @@
             decoded.current_C_Warning=readUInt16LE(Bytes.slice(42,44));
             decoded.current_warning=readUInt16LE(Bytes.slice(44,46));
            }
-           else if(Bytes.length===7)//应答帧
+           else if(Bytes.length===7)
            {
             decoded.CMD=readUInt8LE(Bytes.slice(1,2));
             decoded.addr=readUInt8LE(Bytes.slice(2,3));
@@ -154,7 +154,7 @@
  {
      var n;
      var Exponent;
-     if(byte[7]&0xF0)//求阶码与阶数
+     if(byte[7]&0xF0)
      {
        byte[7]=byte[7]&0x7F;
         Exponent=(byte[7]<<4)+((byte[6]&0xF0)>>4);
