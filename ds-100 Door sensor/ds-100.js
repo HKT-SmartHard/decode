@@ -49,9 +49,9 @@ function Decoder(bytes, port) {
                 i += 4;
                 break;
             case 0x24:// counter intervel
-                decoded.counterIntervel = bytes[i];
-                dataLen -= 1;
-                i += 1;
+                decoded.counterIntervel = byteToUint16(bytes.slice(i, i + 2));
+                dataLen -= 2;
+                i += 2;
                 break;
             case 0x25:// hearter intervel
                 decoded.hearterIntervel = bytes[i];
