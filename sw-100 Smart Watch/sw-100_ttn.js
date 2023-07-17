@@ -1,12 +1,14 @@
 /**
- * Payload Decoder for The Reports
+ * Payload Decoder for The Things Network
  * 
- * Copyright 2022 HKT SmartHard
+ * Copyright 2023 HKT SmartHard
  * 
  * @product HKT-SW-100
  */
-function Decode(fPort, bytes) {
+
+function easy_decode(bytes) {
     var decoded = {};
+
     if (bytes[0] === 0xbd && bytes[1] === 0xbd && bytes[2] === 0xbd && bytes[3] === 0xbd) {
         if (bytes[4] === 0xF6 && bytes.length === 17)//Battery voltage upload
         {
@@ -219,8 +221,6 @@ function readDoubleLE(byte) {
 }
 
 
-
-
 function readX16LE(byte) {
     var value = (byte[0] << 8) + byte[1];
     return (value & 0xFFFF);
@@ -253,16 +253,8 @@ function dateFormat(timestamp) {
     utc = '   +08:00'
     Time = Y + M + D + h + m + s + utc;
     return Time;
-
-
-
 }
 
-function decodeUplink(input) {
-    var decoded = Decode(input.fPort, input.bytes);
-    return {
-        data: {
-            Data: decoded,
-        }
-    };
+function Decoder(bytes, port) {
+    return easy_decode(bytes);
 }

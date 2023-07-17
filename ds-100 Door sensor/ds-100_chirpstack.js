@@ -1,13 +1,12 @@
 /**
- * Payload Decoder for The Reports
+ * Payload Decoder for The Chirpstack v4
  * 
- * Copyright 2022 HKT SmartHard
+ * Copyright 2023 HKT SmartHard
  * 
  * @product HKT-DS-100
  */
 
-function Decoder(bytes, port) {
-
+function easy_decode(bytes) {
     var decoded = {};
 
     if (checkReportSync(bytes) == false)
@@ -104,10 +103,9 @@ function checkReportSync(bytes) {
     return false;
 }
 
-var info_report = [0x68, 0x6B, 0x74, 0x00, 0x2D, 0x08, 0x00, 0x84, 0x00, 0x03, 0x5D];
-var data_report = [0x68, 0x6B, 0x74, 0x00, 0x59, 0x26, 0x00, 0x33, 0x00, 0x22, 0x00, 0x00, 0x12, 0x22, 0x00, 0x00, 0x22, 0x22];
-
-console.log(Decoder(info_report, 10))
-console.log(Decoder(data_report, 10))
+function decodeUplink(input) {
+    var decoded = easy_decode(input.bytes);
+    return { data: decoded };
+}
 
 

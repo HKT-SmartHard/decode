@@ -1,12 +1,12 @@
 /**
- * Payload Decoder for The Reports
+ * Payload Decoder for The Chirpstack v4
  * 
  * Copyright 2023 HKT SmartHard
  * 
- * @product gat-100
+ * @product GAT-100
  */
-function Decoder(bytes, port) {
 
+function easy_decode(bytes) {
     var decoded = {};
 
     if (checkReportSync(bytes) == false)
@@ -29,32 +29,18 @@ function Decoder(bytes, port) {
                 dataLen -= 1;
                 i += 1;
                 break;
-            case 0x09:// TEM
-                if(bytes[i]===0x00)
-                {
-                    decoded.temperature=readInt16LE(bytes.slice(7,9))/1000;
-                }
-                else if(bytes[i]===0x80)
-                {
-                    decoded.temperature=-(readInt16LE(bytes.slice(7,9)))/1000;
-                }
+            case 0x09:// tamperature
+                var value = readInt16LE(bytes.slice(i, i + 2));
+                if (value > 0x7FFFFFFF)
+                    value = -(value & 0x7FFFFFFF);
+                decoded.temperature = value / 1000;
                 dataLen -= 3;
                 i += 3;
                 break;
             case 0x0A:// humidity
-                decoded.humidity=readUInt32LE(bytes.slice(6,9))/1000;
+                decoded.humidity = readUInt32LE(bytes.slice(i, i + 2)) / 1000;
                 dataLen -= 3;
                 i += 3;
-                break;
-            case 0x84:// Temperproof_status
-                decoded.Temperproof_status=readUInt8LE(bytes.slice(6,7));
-                dataLen -= 1;
-                i += 1;
-                break;
-            case 0x86:// Data_Synchronization_cycle  
-                decoded.Data_Synchronization_cycle=readUInt16LE(bytes.slice(6,8));
-                dataLen -= 2;
-                i += 2;
                 break;
             case 0x10:// GPS latitude
                 var value = bytes[i] << 24 | bytes[i + 1] << 16 | bytes[i + 2] << 8 | bytes[i + 3];
@@ -77,6 +63,33 @@ function Decoder(bytes, port) {
                 dataLen -= 1;
                 i += 1;
                 break;
+            case 0x39:// work mode and report interval
+                decoded.work_mode = bytes[i];
+                i += 1;
+                decoded.report_interval_time1 = readUInt16LE(bytes.slice(i, i + 1));
+                i += 2;
+                decoded.start_hour_time1 = bytes[i++];
+                decoded.start_min_time1 = bytes[i++];
+                decoded.end_hour_time1 = bytes[i++];
+                decoded.end_min_time1 = bytes[i++];
+
+                decoded.report_interval_time2 = readUInt16LE(bytes.slice(i, i + 1));
+                i += 2;
+                decoded.start_hour_time2 = bytes[i++];
+                decoded.start_min_time2 = bytes[i++];
+                decoded.end_hour_time2 = bytes[i++];
+                decoded.end_min_time2 = bytes[i++];
+
+                decoded.idle_interval = readUInt16LE(bytes.slice(i, i + 1));
+                dataLen -= 15;
+                i += 2;
+                break;
+            case 0x84:// tamper alarm
+                decoded.tamper_alarm = readUInt8LE(bytes.slice(6, 7));
+                dataLen -= 1;
+                i += 1;
+                break;
+
         }
     }
     return decoded;
@@ -100,25 +113,26 @@ function checkReportSync(bytes) {
     return false;
 }
 
- function readUInt16LE(bytes) 
- {
-  var value = (bytes[0] << 8) + bytes[1];
-  return (value & 0xFFFF);
- }
+function readUInt16LE(bytes) {
+    var value = (bytes[0] << 8) + bytes[1];
+    return (value & 0xFFFF);
+}
 
-function readInt16LE(bytes)
-{
+function readInt16LE(bytes) {
     var ref = readUInt16LE(bytes);
     return (ref > 0x7FFF) ? ref - 0x10000 : ref;
 }
 
-function readUInt32LE(bytes) 
-{
+function readUInt32LE(bytes) {
     var value = (bytes[0] << 24) + (bytes[1] << 16) + (bytes[2] << 8) + bytes[3];
     return (value & 0xFFFFFFFF);
 }
- 
-function readUInt8LE_SWP8(bytes) 
-{
+
+function readUInt8LE_SWP8(bytes) {
     return (value & 0xFF);
+}
+
+function decodeUplink(input) {
+    var decoded = easy_decode(input.bytes);
+    return { data: decoded };
 }

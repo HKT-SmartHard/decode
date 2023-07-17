@@ -1,17 +1,18 @@
 /**
- * Payload Decoder for The Reports
+ * Payload Decoder for The Things Network
  * 
- * Copyright 2022 HKT SmartHard
+ * Copyright 2023 HKT SmartHard
  * 
- * @product HKT-AQS-1000
+ * @product HKT-IAQ-1000
  */
-function Decoder(bytes, port) {
 
+function easy_decode(bytes) {
     var decoded = {};
 
     if (checkReportSync(bytes) == false)
         return;
 
+    var temp;
     var dataLen = bytes.length - 5;
     var i = 5;
     while (dataLen--) {
@@ -35,6 +36,9 @@ function Decoder(bytes, port) {
                 i += 1;
                 break;
             case 0x09:// TEMPERATURE
+                temp = byteToInt32(bytes.slice(i, i + 3));
+                if (temp > 0x7FFFFFFF)
+                    temp = -(temp & 0x7FFFFFFF);
                 // ℃
                 decoded.temperature = byteToInt32(bytes.slice(i, i + 3)) / 1000;
 
@@ -94,15 +98,46 @@ function Decoder(bytes, port) {
                 dataLen -= 1;
                 i += 1;
                 break;
+            case 0x29:// LED mode
+                decoded.led_display = bytes[i];
+                dataLen -= 1;
+                i += 1;
+                break;
+            case 0x2A:// BEEP mode
+                decoded.beep = bytes[i];
+                dataLen -= 1;
+                i += 1;
+                break;
+            case 0x2B:// temp unit
+                decoded.temperature_unit = bytes[i];
+                if (decoded.temperature_unit) {
+                    decoded.temperature = byteToInt32(bytes.slice(i, i + 3)) / 1000; // ℃
+                }
+                else {
+                    decoded.temperature = byteToInt16(bytes.slice(i, i + 3)) / 1000 * 1.8 + 32; // ℉
+                }
+                dataLen -= 1;
+                i += 1;
+                break;
+            case 0x2C:// display mode
+                decoded.temperature_unit = bytes[i];
+                dataLen -= 1;
+                i += 1;
+                break;
+            case 0x2D:// display overturn
+                decoded.display_overturn = bytes[i];
+                dataLen -= 1;
+                i += 1;
+                break;
             case 0x81:// power way
                 decoded.pwr_way = bytes[i];
                 dataLen -= 1;
                 i += 1;
                 break;
-            case 0x82://  Eco mode
-                decoded.eco = bytes[i];
-                dataLen -= 1;
-                i += 1;
+            case 0x86:// sync interval
+                decoded.sync_interval = readUInt16LE(bytes.slice(6, 8));
+                dataLen -= 2;
+                i += 2;
                 break;
         }
     }
@@ -141,6 +176,7 @@ function checkReportSync(bytes) {
     return false;
 }
 
-var test = [0x68, 0x6B, 0x74, 0x00, 0x12, 0x01, 0x03, 0x01, 0x02, 0x69, 0x06, 0x00, 0x00, 0x30, 0x6C, 0x81, 0x00, 0x82, 0x00, 0x09, 0x00, 0x7D, 0xD5, 0x0A, 0x00, 0xB3, 0x8D, 0x19, 0x03, 0xE8, 0x1A, 0x01, 0x1B, 0x04, 0x1C, 0x00, 0x10, 0x1D, 0x00, 0x10, 0x1E, 0x00, 0x29, 0x1F, 0x00, 0x20, 0x03, 0x90, 0x21, 0x01];
-console.log(Decoder(test, 10))
 
+function Decoder(bytes, port) {
+    return easy_decode(bytes);
+}

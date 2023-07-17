@@ -1,13 +1,14 @@
 /**
- * Payload Decoder for The Reports
+ * Payload Decoder for The Things Network
  * 
- * Copyright 2022 HKT SmartHard
+ * Copyright 2023 HKT SmartHard
  * 
  * @product HKT-GT30
  */
-function Decoder(bytes, port) {
 
+function easy_decode(bytes) {
     var decoded = {};
+
     if (checkReportSync(bytes.slice(0, 4)) == false)
         return;
 
@@ -80,7 +81,6 @@ function Decoder(bytes, port) {
     return decoded;
 }
 
-
 function checkReportSync(bytes) {
     if (bytes == "T,S1") {
         return true;
@@ -88,10 +88,6 @@ function checkReportSync(bytes) {
     return false;
 }
 
-var th_info = "T,S1,0095690000015896,40,14,1,2,30.9,59.1,1,3.5";
-var gps_info = "T,S1,0095690000015896,40,15,21,E112.851069,S28.246640,2022.07.22 02:12:09,30.9";
-
-console.log(Decoder(th_info, 10))
-console.log(Decoder(gps_info, 10))
-
-
+function Decoder(bytes, port) {
+    return easy_decode(bytes);
+}

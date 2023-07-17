@@ -11,7 +11,7 @@ function Decoder(bytes) {
     decoded.events.AttributeEventV3 = {};
     decoded.events.up_raw_data = {};
     var decoded_down = {};
-    decoded_down.params={};
+    decoded_down.params = {};
     if (bytes[0] === 0xfd && bytes[1] === 0xfe) {
         if (bytes[3] === 0x01 && bytes[7] === 0x17 && bytes.length === 31) {//属性帧
             decoded.events.AttributeEventV3.Heartbeat = readUInt16LE(bytes.slice(8, 10));
@@ -83,9 +83,9 @@ function Decoder(bytes) {
             decoded.events.up_raw_data.content = bytesToHexString(bytes);
         }
         else if (bytes[3] === 0x05 && bytes[7] === 0x0a && bytes.length === 18) {//控制帧
-            decoded_down.method="thing.service.ControlCmdV3";
-            decoded_down.id="10003";
-            decoded_down.version="1.30";
+            decoded_down.method = "thing.service.ControlCmdV3";
+            decoded_down.id = "10003";
+            decoded_down.version = "1.30";
             decoded_down.params.BusinessId = readUInt32LE(bytes.slice(8, 12));
             decoded_down.params.CommandCode = readUInt16LE(bytes.slice(12, 14));
             decoded_down.params.Key = readUInt16LE(bytes.slice(14, 16));
@@ -93,9 +93,9 @@ function Decoder(bytes) {
             return decoded_down;
         }
         else if (bytes[3] === 0x06 && bytes[7] === 0x18 && bytes.length === 32) {//配置帧
-            decoded_down.method="thing.service.ControlCmdV3";
-            decoded_down.id="10003";
-            decoded_down.version="1.30";
+            decoded_down.method = "thing.service.ControlCmdV3";
+            decoded_down.id = "10003";
+            decoded_down.version = "1.30";
             decoded_down.params.BusinessId = readUInt32LE(bytes.slice(8, 12));
             decoded_down.params.MagHeartbeat = readUInt16LE(bytes.slice(12, 14));
             decoded_down.params.MagCaron = readUInt8LE(bytes.slice(14, 15));

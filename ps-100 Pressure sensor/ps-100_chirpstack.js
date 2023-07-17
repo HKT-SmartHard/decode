@@ -1,12 +1,12 @@
 /**
- * Payload Decoder for The Reports
+ * Payload Decoder for The Chirpstack v4
  * 
- * Copyright 2022 HKT SmartHard
+ * Copyright 2023 HKT SmartHard
  * 
  * @product HKT-PS-100
  */
-function Decoder(bytes, port) {
 
+function easy_decode(bytes) {
     var decoded = {};
 
     var type = bytes[0];
@@ -73,12 +73,8 @@ function hex2float(bytes) {
     return sign * mantissa * Math.pow(2, exponent);
 }
 
-
-var heatbeat_report = [0x01, 0x00, 0x00, 0x00, 0x00, 0x3B, 0x73, 0xEC, 0xC0, 0x2F, 0x11, 0x40, 0x41, 0xBA, 0x5E, 0x00, 0x3C, 0x05, 0xA0, 0x01];
-var alarm_report = [0x02, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x3F, 0x1E, 0x40, 0x01, 0xCA, 0xC1];
-var fault_report = [0x03, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x3F];
-
-console.log(Decoder(heatbeat_report, 10))
-console.log(Decoder(alarm_report, 10))
-console.log(Decoder(fault_report, 10))
+function decodeUplink(input) {
+    var decoded = easy_decode(input.bytes);
+    return { data: decoded };
+}
 

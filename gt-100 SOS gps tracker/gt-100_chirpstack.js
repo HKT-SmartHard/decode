@@ -1,33 +1,33 @@
 /**
- * Decoder for The Things Network
+ * Payload Decoder for The Chirpstack v4
  * 
- * Copyright 2022 HKT SmartHard
+ * Copyright 2023 HKT SmartHard
  * 
- * @product   GPS Tracker GT-100
+ * @product HKT-GT10
  */
-function Decoder(bytes) {
+
+function easy_decode(bytes) {
     var decoded = {};
-    if(bytes[0]===0xaa){
-        decoded.UTC=readUInt32LE(bytes.slice(1,5));
-        decoded.lat=readUInt32LE(bytes.slice(5,9))/1000000;
-        decoded.lon=readUInt32LE(bytes.slice(9,13))/1000000;
-        decoded.speed=readUInt8LE(bytes.slice(13,14));
-        decoded.azimuth=readUInt16LE(bytes.slice(14,16));
-        decoded.hight=readUInt16LE(bytes.slice(16,18));
+
+    if (bytes[0] == 0xaa) {
+        decoded.UTC = readUInt32LE(bytes.slice(1, 5));
+        decoded.lat = readUInt32LE(bytes.slice(5, 9)) / 1000000;
+        decoded.lon = readUInt32LE(bytes.slice(9, 13)) / 1000000;
+        decoded.speed = readUInt8LE(bytes.slice(13, 14));
+        decoded.azimuth = readUInt16LE(bytes.slice(14, 16));
+        decoded.hight = readUInt16LE(bytes.slice(16, 18));
         console.log(formatDate(decoded.UTC));
-        if(bytes[18]===0x01)
-        {
-            decoded.functioncode=readUInt8LE(bytes.slice(18,19));
-            decoded.Datelength=readUInt8LE(bytes.slice(19,20));
-            decoded.warning=readUInt8LE(bytes.slice(20,21));
+        if (bytes[18] == 0x01) {
+            decoded.functioncode = readUInt8LE(bytes.slice(18, 19));
+            decoded.Datelength = readUInt8LE(bytes.slice(19, 20));
+            decoded.warning = readUInt8LE(bytes.slice(20, 21));
         }
-        else if(bytes[18]===0x02)
-        {
-            decoded.functioncode=readUInt8LE(bytes.slice(18,19));
-            decoded.Datelength=readUInt8LE(bytes.slice(19,20));
-            decoded.step_number=readUInt16LE(bytes.slice(20,22));
-            decoded.Woek_ID=((bytes[22]*Math.pow(2,24))+(bytes[23]*Math.pow(2,16))+(bytes[24]*Math.pow(2,8))+bytes[25]).toString(16);
-            decoded.electric=readUInt8LE(bytes.slice(26,27));
+        else if (bytes[18] == 0x02) {
+            decoded.functioncode = readUInt8LE(bytes.slice(18, 19));
+            decoded.Datelength = readUInt8LE(bytes.slice(19, 20));
+            decoded.step_number = readUInt16LE(bytes.slice(20, 22));
+            decoded.Woek_ID = ((bytes[22] * Math.pow(2, 24)) + (bytes[23] * Math.pow(2, 16)) + (bytes[24] * Math.pow(2, 8)) + bytes[25]).toString(16);
+            decoded.electric = readUInt8LE(bytes.slice(26, 27));
         }
 
     }
@@ -70,7 +70,7 @@ function readInt32LE(bytes) {
  * util
  ********************************************/
 function formatDate(time, format = 'YY-MM-DD hh:mm:ss') {
-    var date = new Date(time*1000);
+    var date = new Date(time * 1000);
 
     var year = date.getFullYear(),
         month = date.getMonth() + 1,
@@ -114,4 +114,9 @@ function HexString2Bytes(str) {
         pos += 2;
     }
     return arrBytes;
+}
+
+function decodeUplink(input) {
+    var decoded = easy_decode(input.bytes);
+    return { data: decoded };
 }
