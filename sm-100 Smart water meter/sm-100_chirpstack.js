@@ -196,7 +196,7 @@ function readInt32LE_SWP32(byte) {
 function readDoubleLE(byte) {
     var n;
     var Exponent;
-    if (byte[7] & 0xF0)//求阶码与阶数
+    if (byte[7] & 0xF0)
     {
         byte[7] = byte[7] & 0x7F;
         Exponent = (byte[7] << 4) + ((byte[6] & 0xF0) >> 4);
@@ -279,3 +279,5 @@ function decodeUplink(input) {
     var decoded = easy_decode(input.bytes);
     return { data: decoded };
 }
+
+8CC302320114518F

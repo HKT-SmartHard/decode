@@ -9,8 +9,7 @@
 function easy_decode(bytes) {
     var decoded = {};
 
-    if (bytes[0] === 0xF2)//帧类型
-    {
+    if (bytes[0] === 0xF2) {
         decoded.Temperature = readInt16LE(bytes.slice(1, 3)) / 100;
         decoded.Gastric_momentum = readUInt32LE(bytes.slice(3, 7));
         decoded.acc_x = readInt8LE(bytes.slice(7, 8));
@@ -19,8 +18,7 @@ function easy_decode(bytes) {
         decoded.Bat = readUInt8LE(bytes.slice(10, 11));
         //decoded.PH=readUInt8LE(bytes.slice(11,12))/10;
     }
-    else if (bytes[0] === 0xF5)//帧类型
-    {
+    else if (bytes[0] === 0xF5) {
         decoded.Temperature = readInt16LE(bytes.slice(1, 3));
         decoded.Gastric_momentum = readUInt32LE(bytes.slice(3, 7));
         decoded.acc_x = readInt8LE(bytes.slice(7, 8));
@@ -87,8 +85,7 @@ function readInt32LE_SWP32(byte) {
 function readDoubleLE(byte) {
     var n;
     var Exponent;
-    if (byte[7] & 0xF0)
-    {
+    if (byte[7] & 0xF0) {
         byte[7] = byte[7] & 0x7F;
         Exponent = (byte[7] << 4) + ((byte[6] & 0xF0) >> 4);
         n = Exponent - 1023;
