@@ -101,30 +101,29 @@ function easy_decode(bytes) {
                 }
             }
             else if (bytes[1] === 0xD6) {
-                decoded.Type = readUInt8LE(bytes.slice(2, 3));
-                decoded.Total_groups = readUInt8LE(bytes.slice(3, 4));
-                var N1 = decoded.Total_groups;
-                decoded.ALL = [];
-                while (N1 >= 1) {
-                    decoded.timestamp = dateFormat(bytes[4] + (bytes[5] << 8) + (bytes[6] << 16) + (bytes[7] << 24));
-                    decoded.Total_PackCount = readUInt8LE(bytes.slice(8, 9));
-                    var N2 = decoded.Total_PackCount;
-                    var all = [];
-                    var data = {};
-                    while (N2 >= 1) {
-                        data.Major0 = (bytes[9] + (bytes[10] << 8));//Major
-                        data.Minor0 = (bytes[11] + (bytes[12] << 8));//Minor0
-                        data.Rssi0 = readInt8LE(bytes.slice(13, 14));//Rssi0
-                        all[N2] = data;
-                        console.table(all[N2]);
-                        N2--;
-                        bytes.splice(9, 5);
+                decoded.Type = bytes[2];
+                decoded.group = bytes[3];
+                decoded.BLE = [];
+                var pack_count = 0;
+                var Timestamp = 0;
+                var count = 0;
+                for (var group = 0; group < decoded.group; group++) { //bd d6 00 01 f7f2d964 03 0800 8504 21 0805 6305 be 0807 0605 b5c4
+                    count = pack_count;
+                    pack_count = bytes[8 + count * 5 + group * 5];
+                    Timestamp = readUInt32LE_SWP32(bytes.slice(4 + + count * 5 + group * 5, 8 + count * 5 + group * 5));
+                    
+                    decoded.BLE.push("PackCount: " + pack_count);
+                    decoded.BLE.push("Timestamp: "+ Timestamp);
+    
+                    for (var pack = 0; pack < pack_count; pack++) {
+                        var data = {};
+                        data.Major = readUInt16LE_SWP16(bytes.slice(9 + pack * 5, 11 + pack * 5));//Major
+                        data.Minor = readUInt16LE_SWP16(bytes.slice(11 + pack * 5, 13 + pack * 5));//Minor
+                        data.Rssi = readInt8LE(bytes[13 + pack * 5]);//Rssi
+                        decoded.BLE.push(data);
                     }
-                    decoded.ALL[N1] = all;
-                    bytes.splice(4, 4);
-                    N1--;
                 }
-                bytes.splice(1, 6);
+                // console.table(decoded.BLE);
             }
             else if (bytes[1] === 0x02) {
                 decoded.Upl_warn = (bytes[3] + (bytes[2] << 8)).toString(16);//Bitfield see below
