@@ -31,14 +31,12 @@ function easy_decode(bytes) {
                 i += 1;
                 break;
             case 0x33:// unit_price
-                t = bytes.slice(i, i + 4 )
                 price = byteToInt32(bytes.slice(i, i + 4 ));
                 if (price > 0x7FFFFFFF)
                     price = -(price & 0x7FFFFFFF);
                 decoded.unit_price = byteToInt32(bytes.slice(i, i + 4))/100;
                 dataLen -= 4;
                 i += 4;
-                console.log(t);
                 break;
              case 0x35:// total_used
                 used = byteToInt32(bytes.slice(i, i + 4 ));
