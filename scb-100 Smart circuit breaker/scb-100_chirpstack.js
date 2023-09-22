@@ -19,7 +19,7 @@ function easy_decode(bytes) {
             decoded.Totalvoltage = readUInt16LE(bytes.slice(6, 8));
             decoded.Leakagecurrent = readUInt16LE(bytes.slice(8, 10));
             decoded.power = readUInt16LE(bytes.slice(10, 12));
-            decoded.temperature = readUInt16LE(bytes.slice(12, 14)) / 10;
+            decoded.temperature = readInt16LE(bytes.slice(12, 14)) / 10;
             decoded.current = readUInt16LE(bytes.slice(14, 16));
             decoded.warning = readUInt16LE(bytes.slice(16, 18)).toString(2);
             decoded.Q = readUInt32LE_SWP32(bytes.slice(18, 22));

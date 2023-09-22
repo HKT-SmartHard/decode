@@ -12,7 +12,9 @@ function easy_decode(bytes) {
     if (checkReportSync(bytes.slice(0, 4)) == false)
         return;
 
-    var field = bytes.split(",");
+    var asciiArray = arrayToAscii(bytes)
+    var field = asciiArray.split(",");
+
 
     if (field.length == 10) //gps data
     {
@@ -81,8 +83,19 @@ function easy_decode(bytes) {
     return decoded;
 }
 
+function arrayToAscii(array) {
+    let ascii = '';
+  
+    for (let i = 0; i < array.length; i++) {
+      ascii += String.fromCharCode(array[i]);
+    }
+  
+    return ascii;
+  }
+
+
 function checkReportSync(bytes) {
-    if (bytes == "T,S1") {
+    if (bytes.indexOf("T,S1")) {
         return true;
     }
     return false;
@@ -91,3 +104,5 @@ function checkReportSync(bytes) {
 function Decoder(bytes, port) {
     return easy_decode(bytes);
 }
+
+

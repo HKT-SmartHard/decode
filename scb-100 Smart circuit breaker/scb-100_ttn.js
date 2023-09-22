@@ -41,7 +41,7 @@ function easy_decode(bytes) {
             decoded.Phasepower_factor_B = readUInt16LE(bytes.slice(52, 54));
             decoded.Phasepower_factor_C = readUInt16LE(bytes.slice(54, 56));
             decoded.temperature_A = readUInt16LE(bytes.slice(56, 5));
-            decoded.temperature_B = readUInt16LE(bytes.slice(58, 60));
+            decoded.temperature_B = readInt16LE(bytes.slice(58, 60)) /10;
             decoded.temperature_C = readUInt16LE(bytes.slice(60, 62));
             decoded.temperature_N = readUInt16LE(bytes.slice(62, 64));
             decoded.Remotecontrol = readUInt8LE(bytes.slice(64, 65));

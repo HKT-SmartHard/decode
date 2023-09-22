@@ -120,3 +120,4 @@ function decodeUplink(input) {
     var decoded = easy_decode(input.bytes);
     return { data: decoded };
 }
+
