@@ -44,7 +44,7 @@ function easy_decode(bytes) {
         }
 
         if (status & 0x04) {
-            decoded.valveFailure = "Alarm";
+            decoded.valveFailure = "Alarm"; 
         } else {
             decoded.valveFailure = "Normal";
         }

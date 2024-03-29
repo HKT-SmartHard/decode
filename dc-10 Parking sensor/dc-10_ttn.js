@@ -1,11 +1,13 @@
 /**
- * Decoder for The Things Network
+ * Payload Decoder for The Things Network
  * 
- * Copyright 2022 HKT SmartHard
+ * Copyright 2024 HKT SmartHard
  * 
- * @product    MagneticSensor   DC-10
+ * @product HKT-DC-10
  */
-function Decoder(bytes) {
+
+function easy_decode(bytes) {
+
     var decoded = {};
     decoded.events = {};
     decoded.events.AttributeEventV3 = {};
@@ -75,6 +77,7 @@ function Decoder(bytes) {
             decoded.events.AttributeEventV3.BaseX = readInt16LE(bytes.slice(29, 31));
             decoded.events.AttributeEventV3.BaseY = readInt16LE(bytes.slice(31, 33));
             decoded.events.AttributeEventV3.BaseZ = readInt16LE(bytes.slice(33, 35));
+            
             decoded.events.AttributeEventV3.ComfirmFailure = readUInt16LE(bytes.slice(35, 37));
             decoded.events.AttributeEventV3.RadarWorkTimes = readUInt16LE(bytes.slice(37, 39));
             decoded.events.AttributeEventV3.ServerTime = formatDate(new Date().getTime());
@@ -201,4 +204,8 @@ function HexString2Bytes(str) {
         pos += 2;
     }
     return arrBytes;
+}
+
+function Decoder(bytes, port) {
+    return easy_decode(bytes);
 }
