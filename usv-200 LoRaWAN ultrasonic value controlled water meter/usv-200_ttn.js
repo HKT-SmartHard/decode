@@ -104,7 +104,7 @@ function easy_decode(bytes) {
 
         unit = bytes[i++];
         value = convertBCD2BIN(bytes[i++]) + (convertBCD2BIN(bytes[i++]) * 100) + (convertBCD2BIN(bytes[i++]) * 10000) + (convertBCD2BIN(bytes[i++]) * 1000000);
-        switch (unit) {  //m³
+        switch (unit) {  
             case 0x32:
                 decoded.flow_rate = value / 10000000;
                 break;
@@ -126,7 +126,7 @@ function easy_decode(bytes) {
             default:
                 break;
         }
-        decoded.flow_rate = decoded.flow_rate + "m³";
+        decoded.flow_rate = decoded.flow_rate + "mÂ³";
 
         decoded.temperature = (convertBCD2BIN(bytes[i++]) + (convertBCD2BIN(bytes[i++]) * 100) + (convertBCD2BIN(bytes[i++]) * 10000)) / 100 + "";
         decoded.local_time = convertBCD2BIN(bytes[i++]) +
