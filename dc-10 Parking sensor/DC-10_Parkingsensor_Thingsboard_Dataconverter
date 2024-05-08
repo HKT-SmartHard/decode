@@ -1,0 +1,63 @@
+/** Decoder function for incoming data */
+function decodeUplink(input) {
+    var data = input.data; // die rohen, eingehenden Daten
+    var received_at = new Date(); // Empfangszeit
+
+    // Initialise the decoding
+    var decoded = {};
+
+    // Parking State
+    if ((data[0] & 0x40) === 0) {
+        decoded.parkingStatus = "frei";
+    } else {
+        decoded.parkingStatus = "belegt";
+    }
+
+    // Batteryvoltage
+    var batteryVoltage = (data[1] << 8 | data[2]) / 1000; // Umwandlung in Volt
+    decoded.batteryVoltage = batteryVoltage;
+
+    // Device State
+    decoded.deviceActive = (data[0] & 0x80) !== 0 ? "aktiv" : "inaktiv";
+
+    // Heartbeat
+    if ((data[0] & 0x01) === 0x01) {
+        decoded.heartbeat = "erkannt";
+    } else {
+        decoded.heartbeat = "nicht erkannt";
+    }
+
+    // Temperaturesensor
+    if (data.length > 3) {
+        var rawTemp = (data[3] << 8 | data[4]); // angenommenes Format
+        decoded.temperature = rawTemp / 100.0; // Temperatur in Grad Celsius
+    }
+
+    // Additional Metadata and Receiving Data
+    var snr = input.metadata.snr;
+    var rssi = input.metadata.rssi;
+    var spreadingFactor = input.metadata.spreadingFactor;
+
+    return {
+        deviceName: input.deviceName,
+        deviceType: "HKT_DC10_Parkingsensor",
+        attributes: {
+            deviceStatus: decoded.deviceActive,
+            deviceId: input.deviceId,
+            applicationId: input.applicationId,
+            receivedTime: received_at.toISOString(),
+            snr: snr,
+            rssi: rssi,
+            spreadingFactor: spreadingFactor
+        },
+        telemetry: [{
+            ts: received_at.getTime(),
+            values: {
+                parkingStatus: decoded.parkingStatus,
+                batteryVoltage: decoded.batteryVoltage,
+                temperature: decoded.temperature,
+                heartbeat: decoded.heartbeat
+            }
+        }]
+    };
+}
