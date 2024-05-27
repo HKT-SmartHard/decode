@@ -11,7 +11,7 @@ function easy_decode(bytes) {
 
     if (bytes[0] === 0x02) {
         decoded.command = bytes[0];
-        decoded.cumulativeFlow = readUInt32LE_SWP32(bytes.slice(1, 5)) / 1000 + "m³";
+        decoded.cumulativeFlow = readUInt32LE_SWP32(bytes.slice(1, 5)) / 1000 + "m3";
         decoded.equipmentStatus = bytes[5];
         var status = decoded.equipmentStatus;
         if (status & 0x04) {
@@ -59,7 +59,7 @@ function easy_decode(bytes) {
             decoded.hallFaultAlarm = "Normal";
         }
 
-        decoded.electricity = readUInt16LE_SWP16(bytes.slice(7, 9)) / 100 + "V";;
+        decoded.electricity = readUInt16LE_SWP16(bytes.slice(7, 9)) / 100 + "V";
         decoded.rssi = readInt8LE(bytes.slice(9, 10));
         decoded.snr = readInt8LE(bytes.slice(10, 11));
         decoded.frameidentification = readUInt8LE(bytes.slice(11, 12));

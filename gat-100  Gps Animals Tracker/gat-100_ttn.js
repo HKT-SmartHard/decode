@@ -30,15 +30,16 @@ function easy_decode(bytes) {
                 i += 1;
                 break;
             case 0x09:// tamperature
-                var value = readInt16LE(bytes.slice(i, i + 2));
-                if (value > 0x7FFFFFFF)
-                    value = -(value & 0x7FFFFFFF);
+                var value = bytes[i] << 16 | bytes[i + 1] << 8 | bytes[i + 2];
+                if (value > 0x7FFFFF)
+                    value = -(value & 0x7FFFFF);
                 decoded.temperature = value / 1000;
                 dataLen -= 3;
                 i += 3;
                 break;
             case 0x0A:// humidity
-                decoded.humidity = readUInt32LE(bytes.slice(i, i + 2)) / 1000;
+                var value = bytes[i] << 16 | bytes[i + 1] << 8 | bytes[i + 2];
+                decoded.humidity = value / 1000;
                 dataLen -= 3;
                 i += 3;
                 break;
@@ -59,37 +60,36 @@ function easy_decode(bytes) {
                 i += 4;
                 break;
             case 0x15:// step
-                decoded.step = bytes[i];
-                dataLen -= 1;
-                i += 1;
+                decoded.step = bytes[i] << 8 | bytes[i + 1];
+                dataLen -= 2;
+                i += 2;
                 break;
             case 0x39:// work mode and report interval
                 decoded.work_mode = bytes[i];
                 i += 1;
-                decoded.report_interval_time1 = readUInt16LE(bytes.slice(i, i + 1));
+                decoded.report_interval_time1 = readUInt16LE(bytes.slice(i, i + 2));
                 i += 2;
                 decoded.start_hour_time1 = bytes[i++];
                 decoded.start_min_time1 = bytes[i++];
                 decoded.end_hour_time1 = bytes[i++];
                 decoded.end_min_time1 = bytes[i++];
 
-                decoded.report_interval_time2 = readUInt16LE(bytes.slice(i, i + 1));
+                decoded.report_interval_time2 = readUInt16LE(bytes.slice(i, i + 2));
                 i += 2;
                 decoded.start_hour_time2 = bytes[i++];
                 decoded.start_min_time2 = bytes[i++];
                 decoded.end_hour_time2 = bytes[i++];
                 decoded.end_min_time2 = bytes[i++];
 
-                decoded.idle_interval = readUInt16LE(bytes.slice(i, i + 1));
+                decoded.idle_interval = readUInt16LE(bytes.slice(i, i + 2));
                 dataLen -= 15;
                 i += 2;
                 break;
             case 0x84:// tamper alarm
-                decoded.tamper_alarm = readUInt8LE(bytes.slice(6, 7));
+                decoded.tamper_alarm = bytes[i];
                 dataLen -= 1;
                 i += 1;
                 break;
-
         }
     }
     return decoded;

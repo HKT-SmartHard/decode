@@ -44,7 +44,7 @@ function easy_decode(bytes) {
                     bytes = bytes.slice(17, len);
                     len -= 17;
                     break;
-                
+
                 case 0x17:
                     decoded.enable_1 = bytes[2];
                     decoded.Interval_1 = readUInt16LE_SWP16(bytes.slice(3, 5));
@@ -82,7 +82,7 @@ function easy_decode(bytes) {
                     bytes = bytes.slice(4, len);
                     len -= 4;
                     break;
-    
+
                 case 0xD6:
                     decoded.Type = bytes[2];
                     decoded.group = bytes[3];
@@ -91,17 +91,20 @@ function easy_decode(bytes) {
                     var Timestamp = 0;
                     var count = 0;
                     var data_len = 0;
-                    for (var group = 0; group < decoded.group; group++) {
+                    for (var group = 0; group < decoded.group; group++) { //bd d6 00 01 f7f2d964 03 0800 8504 21 0805 6305 be 0807 0605 b5c4
                         count = pack_count;
-                        pack_count = bytes[4 + count * 5 + group * 5];
+                        pack_count = bytes[8 + count * 5 + group * 5];
+                        Timestamp = readUInt32LE_SWP32(bytes.slice(4 + count * 5 + group * 5, 8 + count * 5 + group * 5));
                         data_len += 5;
 
                         decoded.BLE.push("PackCount: " + pack_count);
+                        decoded.BLE.push("Timestamp: " + Timestamp);
+
                         for (var pack = 0; pack < pack_count; pack++) {
                             var data = {};
-                            data.Major = readUInt16LE_SWP16(bytes.slice(5 + pack * 5, 7 + pack * 5));//Major
-                            data.Minor = readUInt16LE_SWP16(bytes.slice(7 + pack * 5, 9 + pack * 5));//Minor
-                            data.Rssi = readInt8LE(bytes[9 + pack * 5]);//Rssi
+                            data.Major = readUInt16LE_SWP16(bytes.slice(9 + pack * 5, 11 + pack * 5));//Major
+                            data.Minor = readUInt16LE_SWP16(bytes.slice(11 + pack * 5, 13 + pack * 5));//Minor
+                            data.Rssi = readInt8LE(bytes[13 + pack * 5]);//Rssi
                             decoded.BLE.push(data);
                         }
                         data_len += (1 + pack_count * 5);

@@ -6,7 +6,6 @@
  * @product USV-200
  */
 
-var ACT_WAY = ["Fingerprint Open", "Password Open", "MF Card Open", "Fingerprint Alarm", "Password Alarm", "MF Card Alarm", "Tamper Alarm", "LoRa Open", "BLE Open", "Unknow"];
 
 function easy_decode(bytes) {
     var decoded = {};
@@ -126,9 +125,9 @@ function easy_decode(bytes) {
             default:
                 break;
         }
-        decoded.flow_rate = decoded.flow_rate + "m³";
+        decoded.flow_rate = decoded.flow_rate + "m3";
 
-        decoded.temperature = (convertBCD2BIN(bytes[i++]) + (convertBCD2BIN(bytes[i++]) * 100) + (convertBCD2BIN(bytes[i++]) * 10000)) / 100 + "";
+        decoded.temperature = (convertBCD2BIN(bytes[i++]) + (convertBCD2BIN(bytes[i++]) * 100) + (convertBCD2BIN(bytes[i++]) * 10000)) / 100;
         decoded.local_time = convertBCD2BIN(bytes[i++]) +
             (convertBCD2BIN(bytes[i++]) * 100) +
             (convertBCD2BIN(bytes[i++]) * 10000) +
