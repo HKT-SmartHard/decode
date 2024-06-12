@@ -1,11 +1,10 @@
 /**
- * Payload Decoder for The Things Network
+ * Payload Decoder for The Chirpstack v4
  * 
  * Copyright 2024 HKT SmartHard
  * 
  * @product USV-200
  */
-
 
 function easy_decode(bytes) {
     var decoded = {};
