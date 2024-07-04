@@ -44,18 +44,20 @@ function easy_decode(bytes) {
                 i += 3;
                 break;
             case 0x10:// GPS latitude
-                var value = bytes[i] << 24 | bytes[i + 1] << 16 | bytes[i + 2] << 8 | bytes[i + 3];
-                if (value > 0x7FFFFFFF)
-                    value = -(value & 0x7FFFFFFF);
-                decoded.latitude = value / 1000000;
+                var ref = (bytes[i] << 24) | (bytes[i + 1] << 16) | (bytes[i + 2] << 8) | bytes[i + 3];
+                if (ref & 0x80000000) {
+                    ref = -(ref & 0x7FFFFFFF);
+                }
+                decoded.latitude = ref / 1000000;
                 dataLen -= 4;
                 i += 4;
                 break;
             case 0x11:// GPS longitude
-                var value = bytes[i] << 24 | bytes[i + 1] << 16 | bytes[i + 2] << 8 | bytes[i + 3];
-                if (value > 0x7FFFFFFF)
-                    value = -(value & 0x7FFFFFFF);
-                decoded.longitude = value / 1000000;
+                var ref = (bytes[i] << 24) | (bytes[i + 1] << 16) | (bytes[i + 2] << 8) | bytes[i + 3];
+                if (ref & 0x80000000) {
+                    ref = -(ref & 0x7FFFFFFF);
+                }
+                decoded.longitude = ref / 1000000;
                 dataLen -= 4;
                 i += 4;
                 break;

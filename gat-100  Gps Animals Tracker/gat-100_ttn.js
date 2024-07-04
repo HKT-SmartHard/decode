@@ -44,18 +44,20 @@ function easy_decode(bytes) {
                 i += 3;
                 break;
             case 0x10:// GPS latitude
-                var value = bytes[i] << 24 | bytes[i + 1] << 16 | bytes[i + 2] << 8 | bytes[i + 3];
-                if (value > 0x7FFFFFFF)
-                    value = -(value & 0x7FFFFFFF);
-                decoded.latitude = value / 1000000;
+                var ref = (bytes[i] << 24) | (bytes[i + 1] << 16) | (bytes[i + 2] << 8) | bytes[i + 3];
+                if (ref & 0x80000000) {
+                    ref = -(ref & 0x7FFFFFFF);
+                }
+                decoded.latitude = ref / 1000000;
                 dataLen -= 4;
                 i += 4;
                 break;
             case 0x11:// GPS longitude
-                var value = bytes[i] << 24 | bytes[i + 1] << 16 | bytes[i + 2] << 8 | bytes[i + 3];
-                if (value > 0x7FFFFFFF)
-                    value = -(value & 0x7FFFFFFF);
-                decoded.longitude = value / 1000000;
+                var ref = (bytes[i] << 24) | (bytes[i + 1] << 16) | (bytes[i + 2] << 8) | bytes[i + 3];
+                if (ref & 0x80000000) {
+                    ref = -(ref & 0x7FFFFFFF);
+                }
+                decoded.longitude = ref / 1000000;
                 dataLen -= 4;
                 i += 4;
                 break;
@@ -97,7 +99,6 @@ function easy_decode(bytes) {
 
 
 function hexToString(bytes) {
-
     var value = "";
     var arr = bytes.toString(16).split(",");
     for (var i = 0; i < arr.length; i++) {
@@ -128,6 +129,11 @@ function readUInt32LE(bytes) {
     return (value & 0xFFFFFFFF);
 }
 
+function readInt32LE(bytes) {
+    var ref = (bytes[0] << 24) + (bytes[1] << 16) + (bytes[2] << 8) + bytes[3];
+    return (ref > 0x7FFFFFFF) ? ref - 0x100000000 : ref;
+}
+
 function readUInt8LE_SWP8(bytes) {
     return (value & 0xFF);
 }
@@ -135,3 +141,4 @@ function readUInt8LE_SWP8(bytes) {
 function Decoder(bytes, port) {
     return easy_decode(bytes);
 }
+
