@@ -19,7 +19,12 @@ function easy_decode(bytes) {
         //decoded.PH=readUInt8LE(bytes.slice(11,12))/10;
     }
     else if (bytes[0] >= 0xC1 && bytes[0] <= 0xC6) {
-        var uint = (1 << (bytes[0] & 0x0F)) / 127
+        let uint = (1 << ((bytes[0] & 0x0F) - 1) )/ 127.0
+        if(bytes[0] == 0xC5){
+            uint = 20 /127
+        }else if(bytes[0] == 0xC6){
+            uint = 40 /127
+        }
         var sensorStatus = bytes[1]
 
         if ((sensorStatus >> 7) & 0x01) {
@@ -46,8 +51,8 @@ function easy_decode(bytes) {
             decoded.sensorStatus = "NO ACK";
         }
 
-        var value = readInt16LE(bytes.slice(2, 4))   // 697  - 4000  -3303
-        let temperature = (((~value) & 0xFFF) * 3100.0 / 2048.0 + 4000) / 100.0 - 0.4;
+        var value = readInt12LE(bytes.slice(2, 4))
+        let temperature = (value * 3100.0 / 2048.0 + 4000) / 100.0 - 0.4 + 0.005;
         decoded.Temperature = parseFloat(temperature.toFixed(2));
 
         value =  readInt8LE(bytes[4]) * uint + decoded.Temperature
@@ -88,6 +93,11 @@ function readUInt8LE_SWP8(byte) {
 function readInt8LE(byte) {
     var ref = readUInt8LE(byte);
     return (ref > 0x7F) ? ref - 0x100 : ref;
+}
+
+function readInt12LE(byte) {
+    var ref = readUInt16LE(byte) & 0xFFF;
+    return (ref > 0x7FF) ? ref - 0x1000 : ref;
 }
 
 function readUInt16LE(byte) {
