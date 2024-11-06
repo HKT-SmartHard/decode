@@ -28,7 +28,7 @@ function easy_decode(bytes) {
     }
     else if (bytes[0] === 0x07) {
         decoded.command = readUInt8LE(bytes.slice(0, 1));
-        decoded.status = readUInt16LE(bytes.slice(1, 2)).toString(2);
+        decoded.status = readUInt8LE(bytes.slice(1, 2)).toString(2);
         decoded.frameidentification = readUInt8LE(bytes.slice(2, 3));
     }
     else if (bytes[2] === 0x04) {
@@ -93,7 +93,7 @@ function easy_decode(bytes) {
             decoded.Amount = (readUInt32LE_SWP32(bytes.slice(11, 15))) / 100;
             decoded.A_phase_voltage = (readUInt16LE_SWP16(bytes.slice(15, 17)) / 16).toString(16);
             decoded.A_phase_current = (readUInt24LE_SWP24(bytes.slice(17, 20)) / 4096).toString(16);
-            decoded.Equipment_status = readUInt8LE(bytes.slice(20, 2)).toString(16);
+            decoded.Equipment_status = readUInt8LE(bytes.slice(20, 21)).toString(16);
             decoded.Equipment_alarm = readUInt8LE(bytes.slice(21, 22)).toString(16);
             decoded.Down_Signal_Strength = readInt8LE(bytes.slice(22, 23));
             decoded.Downward_SNR = readInt8LE(bytes.slice(23, 24));
