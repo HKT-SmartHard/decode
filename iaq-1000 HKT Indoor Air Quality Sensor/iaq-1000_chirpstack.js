@@ -144,6 +144,10 @@ function easy_decode(bytes) {
     return decoded;
 }
 
+function readUInt16LE(bytes) {
+    var value = (bytes[0] << 8) + bytes[1];
+    return (value & 0xFFFF);
+}
 
 function byteToUint16(bytes) {
     var value = bytes[0] * 0xFF + bytes[1];
