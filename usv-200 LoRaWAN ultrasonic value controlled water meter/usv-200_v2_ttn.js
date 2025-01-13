@@ -27,8 +27,8 @@ function easy_decode(bytes) {
     }
 
 
-    decoded.packet_len = bytes[1];
-    decoded.packet_type = bytes[2];
+    // decoded.packet_len = bytes[1];
+    // decoded.packet_type = bytes[2];
     len -= 4;
     i = 3;
 
@@ -97,6 +97,11 @@ function easy_decode(bytes) {
                 i += 2;
             case 0x0B:
                 decoded.pulse_count = readUInt32LE(bytes.slice(i + 1, i + 5));
+                len -= 5;
+                i += 5;
+                break;
+            case 0x0C:
+                decoded.daily_cumulative_flow = readUInt32LE(bytes.slice(i + 1, i + 5));
                 len -= 5;
                 i += 5;
                 break;
@@ -183,6 +188,7 @@ function easy_decode(bytes) {
                 i += 2;
                 break;
             default:
+                len = 0;
                 break;
         }
     } while (len);
@@ -320,8 +326,8 @@ function HexString2Bytes(str) {
     return arrBytes;
 }
 
+
 function Decoder(bytes, port) {
     return easy_decode(bytes);
 }
-
 
