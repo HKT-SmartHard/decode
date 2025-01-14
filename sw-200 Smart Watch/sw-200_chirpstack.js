@@ -192,10 +192,13 @@ function easy_decode(bytes) {
                     bytes = bytes.slice(9, len);
                     len -= 9;
                     break;
+                case 0xBD:
+                    bytes = bytes.slice(3, len);
+                    len -= 3;
+                    break;
                 default:
                     len = 0;
                     break;
-
             }
         }
         else if (bytes[0] == 0xFF) {
