@@ -264,21 +264,13 @@ function readInt32LE_SWP32(bytes) {
 }
 
 function readDoubleLE(bytes) {
-    var n;
-    var Exponent;
-    if (bytes[7] & 0xF0) {
-        bytes[7] = bytes[7] & 0x7F;
-        Exponent = (bytes[7] << 4) + ((bytes[6] & 0xF0) >> 4);
-        n = Exponent - 1023;
+    if (bytes.length < 8) {
+        throw new Error("Not enough bytes to read a double-precision floating-point number.");
     }
-    else {
-        Exponent = (bytes[7] << 4) + ((bytes[6] & 0xF0) >> 4);
-        n = Exponent - 1023;
-    }
-    var integer = ((bytes[6] & 0x0F) << 24) + (bytes[5] << 16) + (bytes[4] << 8) + bytes[3];
-    var Integer = (integer >> (28 - n)) + (0x01 << n);
-    var decimal = (integer - ((integer >> (28 - n)) << (28 - n))) / Math.pow(2, 28 - n);
-    return Integer + decimal;
+
+    // 使用 DataView 来读取小端双精度浮点数
+    const view = new DataView(new Uint8Array(bytes).buffer);
+    return view.getFloat64(0, true); // true 表示小端
 }
 
 

@@ -11,7 +11,7 @@ function easy_decode(bytes) {
 
     if (checkReportSync(bytes) == false)
         return;
-	
+
     var temp;
     var dataLen = bytes.length - 5;
     var i = 5;
@@ -20,18 +20,18 @@ function easy_decode(bytes) {
         i++;
         switch (type) {
             case 0x01:  //software_ver and hardware_ver
-                decoded.hard_ver = bytes[i+1];
+                decoded.hard_ver = bytes[i + 1];
                 decoded.soft_ver = bytes[i];
                 dataLen -= 2;
                 i += 2;
                 break;
             case 0x8B:// BATTERY
-                decoded.battery = readInt16LE(bytes.slice(i, i + 2))/ 1000;
+                decoded.battery = readInt16LE(bytes.slice(i, i + 2)) / 1000;
                 dataLen -= 2;
                 i += 2;
                 break;
             case 0x09:// tamperature
-       			temp = byteToInt32(bytes.slice(i, i + 3));
+                temp = byteToInt32(bytes.slice(i, i + 3));
                 if (temp > 0x7FFFFFFF)
                     temp = -(temp & 0x7FFFFFFF);
                 // ℃
@@ -48,34 +48,39 @@ function easy_decode(bytes) {
                 dataLen -= 3;
                 i += 3;
                 break;
-			 case 0x0E:// angle
-                decoded.angle = readInt16LE(bytes.slice(i, i + 2)) ;
+            case 0x0E:// angle
+                decoded.angle = readInt16LE(bytes.slice(i, i + 2));
                 dataLen -= 2;
                 i += 2;
                 break;
-			case 0x44:// angle state
+            case 0x28:// ht alarm
+                decoded.ht_alarm = bytes[i];
+                dataLen -= 1;
+                i += 1;
+                break;
+            case 0x44:// angle state
                 decoded.angle_state = bytes[i];
                 dataLen -= 1;
                 i += 1;
                 break;
-			case 0x45:// GPS positioning cycle
-                decoded.positioning_cycle= readInt16LE(bytes.slice(i, i + 2));
+            case 0x45:// GPS positioning cycle
+                decoded.positioning_cycle = readInt16LE(bytes.slice(i, i + 2));
                 dataLen -= 2;
                 i += 2;
                 break;
-			case 0x46:// distance
-                decoded.distance= readInt16LE(bytes.slice(i, i + 2));
+            case 0x46:// distance
+                decoded.distance = readInt16LE(bytes.slice(i, i + 2));
                 dataLen -= 2;
                 i += 2;
                 break;
-			case 0x47:// full state
+            case 0x47:// full state
                 decoded.full_state = bytes[i];
                 dataLen -= 1;
                 i += 1;
                 break;
-			case 0x48:// full threshold set
-                decoded.low_threshold_set=  readInt16LE(bytes.slice(i, i + 2));
-				decoded.high_threshold_set=  readInt16LE(bytes.slice(i + 2,i + 4));
+            case 0x48:// full threshold set
+                decoded.low_threshold_set = readInt16LE(bytes.slice(i, i + 2));
+                decoded.high_threshold_set = readInt16LE(bytes.slice(i + 2, i + 4));
                 dataLen -= 4;
                 i += 4;
                 break;
