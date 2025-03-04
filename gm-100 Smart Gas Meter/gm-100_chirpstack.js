@@ -1,3 +1,4 @@
+
 /**
  * Payload Decoder for Chirpstack v4
  * 
@@ -95,7 +96,7 @@ function byteToInt16(bytes) {
 
 function byteToInt32(bytes) {
     var value = (bytes[0] << 24) + (bytes[1] << 16) + (bytes[2] << 8) + bytes[3];
-    return (value & 0xFFFFFFFF);
+    return (value & 0xFFFFFFFF);
 }
 
 function hexToString(bytes) {
@@ -108,12 +109,11 @@ function hexToString(bytes) {
 }
 
 function checkReportSync(bytes) {
-    if (bytes[0] == 0x68 && bytes[1] == 0x68 && bytes[2] == 0x74) {
+    if (bytes[0] == 0x68 && bytes[1] == 0x6B && bytes[2] == 0x74) {
         return true;
     }
     return false;
 }
-
 function decodeUplink(input) {
     var decoded = easy_decode(input.bytes);
     return { data: decoded };
