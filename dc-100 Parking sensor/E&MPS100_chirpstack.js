@@ -3,7 +3,7 @@
  * 
  * Copyright 2023 HKT SmartHard
  * 
- * @product HKT-DC-100
+ * @product HKT-E&MPS-100
  */
 
 function easy_decode(bytes) {
