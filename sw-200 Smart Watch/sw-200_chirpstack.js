@@ -1,7 +1,7 @@
 /**
  * Payload Decoder for The Chirpstack v4
  * 
- * Copyright 2023 HKT SmartHard
+ * Copyright 2025 HKT SmartHard
  * 
  * @product HKT-SW-200
  */
@@ -153,6 +153,34 @@ function easy_decode(bytes) {
                     bytes = bytes.slice((4 + data_len), len);
                     len -= (4 + data_len);
                     // console.table(decoded.BLE);
+                    break;
+                case 0xD7:
+                    decoded.Type = bytes[2];
+                    decoded.group = bytes[3];
+                    decoded.UWB = [];
+                    var pack_count = 0;
+                    var Timestamp = 0;
+                    var count = 0;
+                    var data_len = 0;
+                    for (var group = 0; group < decoded.group; group++) { //bd d6 00 01 f7f2d964 03 0800 8504 21 0805 6305 be 0807 0605 b5c4
+                        count = pack_count;
+                        pack_count = bytes[8 + count * 5 + group * 5];
+                        Timestamp = readUInt32LE_SWP32(bytes.slice(4 + count * 5 + group * 5, 8 + count * 5 + group * 5));
+                        data_len += 5;
+
+                        decoded.UWB.push("PackCount: " + pack_count);
+                        decoded.UWB.push("Timestamp: " + Timestamp);
+
+                        for (var pack = 0; pack < pack_count; pack++) {
+                            var data = {};
+                            data.UBeacon = readUInt32LE_SWP32(bytes.slice(9 + pack * 6, 13 + pack * 6));
+                            data.Distance = readUInt16LE_SWP16(bytes.slice(13 + pack * 6, 15 + pack * 6));
+                            decoded.UWB.push(data);
+                        }
+                        data_len += (1 + pack_count * 6);
+                    }
+                    bytes = bytes.slice((4 + data_len), len);
+                    len -= (4 + data_len);
                     break;
                 case 0x02:
                     decoded.upl_warn = [];
