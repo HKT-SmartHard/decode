@@ -1,5 +1,6 @@
+
 /**
- * Payload Decoder for The Chirpstack v4
+ * Payload Decoder for Chirpstack v4
  * 
  * Copyright 2023 HKT SmartHard
  * 
@@ -31,6 +32,7 @@ function easy_decode(bytes) {
                 i += 1;
                 break;
             case 0x33:// unit_price
+                t = bytes.slice(i, i + 4 )
                 price = byteToInt32(bytes.slice(i, i + 4 ));
                 if (price > 0x7FFFFFFF)
                     price = -(price & 0x7FFFFFFF);
@@ -94,7 +96,7 @@ function byteToInt16(bytes) {
 
 function byteToInt32(bytes) {
     var value = (bytes[0] << 24) + (bytes[1] << 16) + (bytes[2] << 8) + bytes[3];
-    return (value & 0xFFFFFFFF);
+    return (value & 0xFFFFFFFF);
 }
 
 function hexToString(bytes) {
@@ -112,7 +114,6 @@ function checkReportSync(bytes) {
     }
     return false;
 }
-
 function decodeUplink(input) {
     var decoded = easy_decode(input.bytes);
     return { data: decoded };

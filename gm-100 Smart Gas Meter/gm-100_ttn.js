@@ -31,6 +31,7 @@ function easy_decode(bytes) {
                 i += 1;
                 break;
             case 0x33:// unit_price
+                t = bytes.slice(i, i + 4 )
                 price = byteToInt32(bytes.slice(i, i + 4 ));
                 if (price > 0x7FFFFFFF)
                     price = -(price & 0x7FFFFFFF);
@@ -107,12 +108,11 @@ function hexToString(bytes) {
 }
 
 function checkReportSync(bytes) {
-    if (bytes[0] == 0x68 && bytes[1] == 0x6B && bytes[2] == 0x74) {
+    if (bytes[0] == 0x68 && bytes[1] == 0x68 && bytes[2] == 0x74) {
         return true;
     }
     return false;
 }
-
 function Decoder(bytes, port) {
     return easy_decode(bytes);
 }
