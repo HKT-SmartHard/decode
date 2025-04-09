@@ -6,6 +6,7 @@
  * @product BC-100
  */
 
+
 function easy_decode(bytes) {
     var decoded = {};
 
