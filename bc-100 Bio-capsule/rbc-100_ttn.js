@@ -142,27 +142,8 @@ function readUInt32LE(bytes) {
     return (bytes[0] << 24) + (bytes[1] << 16) + (bytes[2] << 8) + bytes[3];
 }
 
-// The Things Network 解码器接口
+// The Things Network 
 function Decoder(bytes, port) {
     return decodeRBC100(bytes);
 }
 
-// 测试代码
-function testDecoder() {
-    // 设备原始数据：686B7400580110074D05099009900990099109908B0C2D49000000184A064BE44C7A86000F
-    var testData = [
-        0x68, 0x6B, 0x74, 0x00, 0x58, 0x01, 0x10, 0x07, 0x4D, 0x05, 
-        0x09, 0x90, 0x09, 0x90, 0x09, 0x90, 0x09, 0x91, 0x09, 0x90, 
-        0x8B, 0x0C, 0x2D, 0x49, 0x00, 0x00, 0x00, 0x18, 0x4A, 0x06, 
-        0x4B, 0xE4, 0x4C, 0x7A, 0x86, 0x00, 0x0F
-    ];
-    
-    console.log("原始数据:", bytesToHexString(testData));
-    var result = decodeRBC100(testData);
-    console.log("解码结果:", JSON.stringify(result, null, 2));
-    
-    return result;
-}
-
-// 执行测试
-// testDecoder();
