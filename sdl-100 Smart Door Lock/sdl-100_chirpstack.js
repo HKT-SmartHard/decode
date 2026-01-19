@@ -3,7 +3,7 @@
  * 
  * Copyright 2023 HKT SmartHard
  * 
- * @product HKT-SDL-100
+ * @product HKT-SDL-200
  */
 
 var ACT_WAY = ["Fingerprint Open", "Password Open", "MF Card Open", "Fingerprint Alarm", "Password Alarm", "MF Card Alarm", "Tamper Alarm", "LoRa Open", "BLE Open", "Unknow"];
