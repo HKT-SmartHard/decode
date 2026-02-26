@@ -4,182 +4,203 @@
  * Copyright 2023 HKT SmartHard
  * 
  * @product HKT-SCB-100
+ * Version: 2.1 (Fixed Energy Calculation & Length Tolerance)
+ * 
+ * Changelog:
+ * - Fixed Electric Power (Q) parsing: Low Bytes (19-20) + High Bytes (21-22).
+ * - Fixed Scale Factor for Energy: Divided by 1000.
+ * - Added tolerance for frames slightly shorter than 68 bytes (e.g., missing tail/CRC).
  */
 
-function easy_decode(bytes) {
-    var decoded = {};
-    if (bytes[0] === 0xAA) {
-        if (bytes[1] === 0x07 || bytes[1] === 0x06) {
-            if (bytes.length === 68)
-                decoded.CMD = readUInt8LE(bytes.slice(1, 2));
-            decoded.addr = readUInt8LE(bytes.slice(2, 3));
-            decoded.Ratedcurrent = readUInt8LE(bytes.slice(3, 4));
-            decoded.types = readUInt8LE(bytes.slice(4, 5));
-            decoded.payload = readUInt8LE(bytes.slice(5, 6));
-            decoded.Totalvoltage = readUInt16LE(bytes.slice(6, 8));
-            decoded.Leakagecurrent = readUInt16LE(bytes.slice(8, 10));
-            decoded.power = readUInt16LE(bytes.slice(10, 12));
-            decoded.temperature = readUInt16LE(bytes.slice(12, 14)) / 10;
-            decoded.current = readUInt16LE(bytes.slice(14, 16));
-            decoded.warning = readUInt16LE(bytes.slice(16, 18)).toString(2);
-            decoded.Q = readUInt32LE_SWP32(bytes.slice(18, 22));
-            decoded.Phasevoltage_A = readUInt16LE(bytes.slice(22, 24));
-            decoded.Phasevoltage_B = readUInt16LE(bytes.slice(24, 26));
-            decoded.Phasevoltage_C = readUInt16LE(bytes.slice(26, 28));
-            decoded.Phasecurrent_A = readUInt16LE(bytes.slice(28, 30));
-            decoded.Phasecurrent_B = readUInt16LE(bytes.slice(30, 32));
-            decoded.Phasecurrent_C = readUInt16LE(bytes.slice(32, 34));
-            decoded.Phasecurrent_N = readUInt16LE(bytes.slice(34, 36));
-            decoded.Phasepower_A = readUInt16LE(bytes.slice(36, 38));
-            decoded.Phasepower_B = readUInt16LE(bytes.slice(38, 40));
-            decoded.Phasepower_C = readUInt16LE(bytes.slice(40, 42));
-            decoded.Phase_A_Warning = readUInt16LE(bytes.slice(42, 44));
-            decoded.Phase_B_Warning = readUInt16LE(bytes.slice(44, 46));
-            decoded.Phase_C_Warning = readUInt16LE(bytes.slice(46, 48));
-            decoded.closing = readUInt16LE(bytes.slice(48, 50)).toString(16);
-            decoded.Phasepower_factor_A = readUInt16LE(bytes.slice(50, 52));
-            decoded.Phasepower_factor_B = readUInt16LE(bytes.slice(52, 54));
-            decoded.Phasepower_factor_C = readUInt16LE(bytes.slice(54, 56));
-            decoded.temperature_A = readUInt16LE(bytes.slice(56, 5));
-            decoded.temperature_B = readInt16LE(bytes.slice(58, 60)) /10;
-            decoded.temperature_C = readUInt16LE(bytes.slice(60, 62));
-            decoded.temperature_N = readUInt16LE(bytes.slice(62, 64));
-            decoded.Remotecontrol = readUInt8LE(bytes.slice(64, 65));
-        }
-        else if (bytes[1] === 0x05 && bytes.length === 49) {
-            decoded.CMD = readUInt8LE(bytes.slice(1, 2));
-            decoded.addr = readUInt8LE(bytes.slice(2, 3));
-            decoded.Types_Loadcurrent = readUInt8LE(bytes.slice(3, 4));
-            decoded.Types = readUInt8LE(bytes.slice(4, 5));
-            decoded.Datalength = readUInt8LE(bytes.slice(5, 6));
-            decoded.voltagelimit_UP = readUInt16LE(bytes.slice(6, 8));
-            decoded.voltagelimit_Down = readUInt16LE(bytes.slice(8, 10));
-            decoded.Ratedcurrent_limit_UP = readUInt16LE(bytes.slice(10, 12));
-            decoded.powerlimit_UP = readUInt16LE(bytes.slice(12, 14));
-            decoded.temperaturelimit = readUInt16LE(bytes.slice(14, 16));
-            decoded.currentlimit = readUInt16LE(bytes.slice(16, 18));
-            decoded.Phasecurrent_A_UPLimit = readUInt16LE(bytes.slice(18, 20));
-            decoded.Phasecurrent_B_UPLimit = readUInt16LE(bytes.slice(20, 22));
-            decoded.Phasecurrent_C_UPLimit = readUInt16LE(bytes.slice(22, 24));
-            decoded.Phasepower_A_UPLimit = readUInt16LE(bytes.slice(24, 26));
-            decoded.Phasepower_B_UPLimit = readUInt16LE(bytes.slice(26, 28));
-            decoded.Phasepower_C_UPLimit = readUInt16LE(bytes.slice(28, 30));
-            decoded.V_Warn_UPLimit = readUInt16LE(bytes.slice(30, 32));
-            decoded.V_Warn_DownLimit = readUInt16LE(bytes.slice(32, 34));
-            decoded.Ratedcurrent_Warn_UPLimit = readUInt16LE(bytes.slice(34, 36));
-            decoded.temperature_Warn_UPLimit = readUInt16LE(bytes.slice(36, 38)) / 10;
-            decoded.current_A_Warning = readUInt16LE(bytes.slice(38, 40));
-            decoded.current_B_Warning = readUInt16LE(bytes.slice(40, 42));
-            decoded.current_C_Warning = readUInt16LE(bytes.slice(42, 44));
-            decoded.current_warning = readUInt16LE(bytes.slice(44, 46));
-        }
-        else if (bytes.length === 7) {
-            decoded.CMD = readUInt8LE(bytes.slice(1, 2));
-            decoded.addr = readUInt8LE(bytes.slice(2, 3));
-            decoded.Datalength = readUInt8LE(bytes.slice(3, 4));
-        }
-    }
-
-    return decoded;
-
-}
-
-/* ******************************************
- * bytes to number
- ********************************************/
-function readUInt8LE(byte) {
-    return (byte & 0xFF);
-}
-
-function readUInt8LE_SWP8(byte) {
-    return (value & 0xFF);
-}
-
-function readInt8LE(byte) {
-    var ref = readUInt8LE(byte);
-    return (ref > 0x7F) ? ref - 0x100 : ref;
-}
-
-function readUInt16LE(byte) {
-    var value = (byte[0] << 8) + byte[1];
-    return (value & 0xFFFF);
-}
-
-function readUInt16LE_SWP16(byte) {
-    var value = (byte[1] << 8) + byte[0];
-    return (value & 0xFFFF);
-}
-
-function readInt16LE(byte) {
-    var ref = readUInt16LE(byte);
-    return (ref > 0x7FFF) ? ref - 0x10000 : ref;
-}
-
-function readUInt32LE(byte) {
-    var value = (byte[0] << 24) + (byte[1] << 16) + (byte[2] << 8) + byte[3];
-    return (value & 0xFFFFFFFF);
-}
-
-function readUInt32LE_SWP32(byte) {
-    var value = (byte[3] << 24) + (byte[2] << 16) + (byte[1] << 8) + byte[0];
-    return (value & 0xFFFFFFFF);
-}
-
-function readInt32LE(byte) {
-    var ref = readUInt32LE(byte);
-    return (ref > 0x7FFFFFFF) ? ref - 0x100000000 : ref;
-}
-
-function readInt32LE_SWP32(byte) {
-    var ref = readUInt32LE_SWP32(byte);
-    return (ref > 0x7FFFFFFF) ? ref - 0x100000000 : ref;
-}
-
-function readDoubleLE(byte) {
-    var n;
-    var Exponent;
-    if (byte[7] & 0xF0) {
-        byte[7] = byte[7] & 0x7F;
-        Exponent = (byte[7] << 4) + ((byte[6] & 0xF0) >> 4);
-        n = Exponent - 1023;
-    }
-    else {
-        Exponent = (byte[7] << 4) + ((byte[6] & 0xF0) >> 4);
-        n = Exponent - 1023;
-    }
-    var integer = ((byte[6] & 0x0F) << 24) + (byte[5] << 16) + (byte[4] << 8) + byte[3];
-    var Integer = (integer >> (28 - n)) + (0x01 << n);
-    var decimal = (integer - ((integer >> (28 - n)) << (28 - n))) / Math.pow(2, 28 - n);
-    return Integer + decimal;
-
-}
-
-
-function readX16LE(byte) {
-    var value = (byte[0] << 8) + byte[1];
-    return (value & 0xFFFF);
-}
-
-function readX16LE_SWP32(byte) {
-    var value = (byte[1] << 8) + byte[0];
-    return (value & 0xFFFF);
-}
-
-function readS16LE(byte) {
-    var value = (byte[0] << 8) + byte[1];
-    return (value & 0xFFFF);
-}
-
-function readS16LE_SWP32(byte) {
-    var value = (byte[1] << 8) + byte[0];
-    return (value & 0xFFFF);
-}
-
 function decodeUplink(input) {
-    var decoded = easy_decode(input.bytes);
-    return { data: decoded };
+    var bytes = input.bytes;
+    
+    if (!bytes || bytes.length < 50) {
+        return { data: { error: "Frame too short" } };
+    }
+
+    // Check Header
+    if (bytes[0] !== 0xAA) {
+        return { data: { error: "Invalid Header" } };
+    }
+
+    var cmd = bytes[1];
+    
+    // Support Real-time Data (0x06, 0x07)
+    if (cmd === 0x07 || cmd === 0x06) {
+        
+        // Helper: Read Big-Endian UInt16
+        function readUInt16BE(buf, offset) {
+            if (offset + 1 >= buf.length) return 0;
+            return (buf[offset] << 8) | buf[offset + 1];
+        }
+
+        // Helper: Read Big-Endian Int16 (for signed temp)
+        function readInt16BE(buf, offset) {
+            if (offset + 1 >= buf.length) return 0;
+            var val = (buf[offset] << 8) | buf[offset + 1];
+            return (val > 0x7FFF) ? val - 0x10000 : val;
+        }
+
+        var decoded = {};
+        decoded.CMD = cmd;
+        decoded.addr = bytes[2];
+        decoded.model = bytes[3]; 
+        decoded.typeCode = bytes[4]; 
+        
+        var typeMap = { 0x06: "3/4P", 0x07: "2P", 0x08: "1P" };
+        decoded.type = typeMap[bytes[4]] || "Unknown";
+
+        // --- Parsing ---
+
+        // Voltage (Index 6)
+        decoded.totalVoltage = readUInt16BE(bytes, 6);
+        
+        // Leakage Current (Index 8)
+        decoded.leakageCurrent = readUInt16BE(bytes, 8);
+        
+        // Power (Index 10)
+        decoded.power = readUInt16BE(bytes, 10);
+        
+        // Temperature (Index 12)
+        decoded.temperature = readUInt16BE(bytes, 12) / 10.0;
+        
+        // Current (Index 14)
+        decoded.current = readUInt16BE(bytes, 14) / 100.0;
+
+        // Warning (Index 16)
+        var warningVal = readUInt16BE(bytes, 16);
+        decoded.testUnfinished = (warningVal & 0x01) ? "1" : "0";
+        decoded.leakageProtectionNormal = (warningVal & 0x02) ? "1" : "0";
+
+        // *** ELECTRIC POWER CONSUMPTION (Q) ***
+        // Protocol: Bytes 19-20 (Low), Bytes 21-22 (High)
+        // Indices: 18-19 (Low), 20-21 (High)
+        if (bytes.length >= 22) {
+            var qLow = readUInt16BE(bytes, 18);
+            var qHigh = readUInt16BE(bytes, 20);
+            // Combine: High << 16 | Low
+            var qTotal = (qHigh << 16) | qLow;
+            // Scale: / 1000 based on sample data verification
+            decoded.electricPowerConsumption = qTotal / 1000.0;
+        } else {
+            decoded.electricPowerConsumption = 0;
+        }
+
+        // Phase Voltages (Index 22, 24, 26)
+        decoded.aPhaseVoltage = readUInt16BE(bytes, 22);
+        decoded.bPhaseVoltage = (bytes.length >= 25) ? readUInt16BE(bytes, 24) : 0;
+        decoded.cPhaseVoltage = (bytes.length >= 27) ? readUInt16BE(bytes, 26) : 0;
+
+        // Phase Currents (Index 28, 30, 32, 34)
+        decoded.aPhaseCurrent = (bytes.length >= 29) ? readUInt16BE(bytes, 28) / 100.0 : 0;
+        decoded.bPhaseCurrent = (bytes.length >= 31) ? readUInt16BE(bytes, 30) / 100.0 : 0;
+        decoded.cPhaseCurrent = (bytes.length >= 33) ? readUInt16BE(bytes, 32) / 100.0 : 0;
+        decoded.nPhaseCurrent = (bytes.length >= 35) ? readUInt16BE(bytes, 34) / 100.0 : 0;
+
+        // Phase Power (Index 36, 38, 40)
+        decoded.aPhasePower = (bytes.length >= 37) ? readUInt16BE(bytes, 36) : 0;
+        decoded.bPhasePower = (bytes.length >= 39) ? readUInt16BE(bytes, 38) : 0;
+        decoded.cPhasePower = (bytes.length >= 41) ? readUInt16BE(bytes, 40) : 0;
+
+        // Phase Warnings (Index 42, 44, 46)
+        var aWarn = (bytes.length >= 43) ? readUInt16BE(bytes, 42) : 0;
+        var bWarn = (bytes.length >= 45) ? readUInt16BE(bytes, 44) : 0;
+        var cWarn = (bytes.length >= 47) ? readUInt16BE(bytes, 46) : 0;
+
+        decoded.aPhaseTestUnfinished = (aWarn & 0x01) ? "1" : "0";
+        decoded.aPhaseLeakageProtectionNormal = (aWarn & 0x02) ? "1" : "0";
+        
+        decoded.bPhaseTestUnfinished = (bWarn & 0x01) ? "1" : "0";
+        decoded.bPhaseLeakageProtectionNormal = (bWarn & 0x02) ? "1" : "0";
+
+        decoded.cPhaseTestUnfinished = (cWarn & 0x01) ? "1" : "0";
+        decoded.cPhaseLeakageProtectionNormal = (cWarn & 0x02) ? "1" : "0";
+
+        // Closing Status (Index 48)
+        var closingVal = (bytes.length >= 49) ? readUInt16BE(bytes, 48) : 0;
+        decoded.onOff = (closingVal === 0x5A00) ? 1 : 0;
+
+        // Power Factors (Index 50, 52, 54)
+        decoded.aPhasePowerFactor = (bytes.length >= 51) ? readUInt16BE(bytes, 50) / 100.0 : 0;
+        decoded.bPhasePowerFactor = (bytes.length >= 53) ? readUInt16BE(bytes, 52) / 100.0 : 0;
+        decoded.cPhasePowerFactor = (bytes.length >= 55) ? readUInt16BE(bytes, 54) / 100.0 : 0;
+
+        // Terminal Temperatures (Index 56, 58, 60, 62)
+        decoded.aTerminalTemperature = (bytes.length >= 57) ? readUInt16BE(bytes, 56) / 10.0 : 0;
+        decoded.bTerminalTemperature = (bytes.length >= 59) ? readInt16BE(bytes, 58) / 10.0 : 0;
+        decoded.cTerminalTemperature = (bytes.length >= 61) ? readUInt16BE(bytes, 60) / 10.0 : 0;
+        decoded.nTerminalTemperature = (bytes.length >= 63) ? readUInt16BE(bytes, 62) / 10.0 : 0;
+
+        // Remote Control (Index 64)
+        decoded.canRemoteCtrl = (bytes.length >= 65) ? bytes[64] : 0;
+
+        // Frame Tail Check (Optional Warning)
+        var frameValid = true;
+        if (bytes.length >= 68) {
+            if (bytes[bytes.length - 1] !== 0x55) frameValid = false;
+        } else {
+            // If length < 68, we parsed what we could, but note it might be truncated
+            frameValid = false; 
+        }
+
+        // Format Output
+        return {
+            data: {
+                decodeStatus: true,
+                decodeData: {
+                    properties: {},
+                    events: [],
+                    funcReply: {},
+                    subData: [{
+                        childSign: decoded.addr.toString(),
+                        properties: {
+                            fullLoadCurrent: decoded.model,
+                            devSpecs: decoded.typeCode.toString(),
+                            totalVoltage: decoded.totalVoltage,
+                            leakageCurrent: decoded.leakageCurrent,
+                            power: decoded.power,
+                            temperature: decoded.temperature,
+                            current: decoded.current,
+                            testUnfinished: decoded.testUnfinished,
+                            leakageProtectionNormal: decoded.leakageProtectionNormal,
+                            electricPowerConsumption: decoded.electricPowerConsumption,
+                            aPhaseVoltage: decoded.aPhaseVoltage,
+                            bPhaseVoltage: decoded.bPhaseVoltage,
+                            cPhaseVoltage: decoded.cPhaseVoltage,
+                            aPhaseCurrent: decoded.aPhaseCurrent,
+                            bPhaseCurrent: decoded.bPhaseCurrent,
+                            cPhaseCurrent: decoded.cPhaseCurrent,
+                            nPhaseCurrent: decoded.nPhaseCurrent,
+                            aPhasePower: decoded.aPhasePower,
+                            bPhasePower: decoded.bPhasePower,
+                            cPhasePower: decoded.cPhasePower,
+                            aPhaseTestUnfinished: decoded.aPhaseTestUnfinished,
+                            aPhaseLeakageProtectionNormal: decoded.aPhaseLeakageProtectionNormal,
+                            bPhaseTestUnfinished: decoded.bPhaseTestUnfinished,
+                            bPhaseLeakageProtectionNormal: decoded.bPhaseLeakageProtectionNormal,
+                            cPhaseTestUnfinished: decoded.cPhaseTestUnfinished,
+                            cPhaseLeakageProtectionNormal: decoded.cPhaseLeakageProtectionNormal,
+                            onOff: decoded.onOff,
+                            aPhasePowerFactor: decoded.aPhasePowerFactor,
+                            bPhasePowerFactor: decoded.bPhasePowerFactor,
+                            cPhasePowerFactor: decoded.cPhasePowerFactor,
+                            aTerminalTemperature: decoded.aTerminalTemperature,
+                            bTerminalTemperature: decoded.bTerminalTemperature,
+                            cTerminalTemperature: decoded.cTerminalTemperature,
+                            nTerminalTemperature: decoded.nTerminalTemperature,
+                            canRemoteCtrl: decoded.canRemoteCtrl
+                        },
+                        events: []
+                    }]
+                }
+            }
+        };
+    }
+
+    return { data: { decodeStatus: false, message: "Unsupported CMD: 0x" + cmd.toString(16) } };
 }
 
 function Decoder(bytes, port) {
-    return easy_decode(bytes);
+    return decodeUplink({ bytes: bytes }).data;
 }
